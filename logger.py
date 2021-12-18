@@ -8,36 +8,22 @@ class logger:
     LOG_DIR = 'logs'
 
     def __init__(self):
-        # create logger
         self.logger = logging.getLogger('trainer')
         self.logger.setLevel(logging.INFO)
 
-        # create file handler which logs messages
         self.move_old()
         file_handler = logging.FileHandler(f'{self.LOG_DIR}/{self.LATEST}')
         file_handler.setLevel(logging.DEBUG)
 
-        # create a console handler to print to screen
         console_handler = logging.StreamHandler()
         console_handler.setLevel(logging.INFO)
 
-        # create formatter and add it to the handlers
         formatter = logging.Formatter('%(asctime)s.%(msecs)03d | %(levelname)s | %(name)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
         file_handler.setFormatter(formatter)
         console_handler.setFormatter(formatter)
 
-        # add the handlers to the logger
         self.logger.addHandler(file_handler)
         self.logger.addHandler(console_handler)
-    
-    def log(self, msg):
-        self.logger.log(logging.INFO, msg)
-    
-    def err(self, msg):
-        self.logger.log(logging.ERROR, msg)
-    
-    def warn(self, msg):
-        self.logger.log(logging.WARN, msg)
     
     def move_old(self):
         if os.path.isdir(self.LOG_DIR):
@@ -60,3 +46,12 @@ class logger:
             os.chdir('..')
         else:
             os.mkdir(self.LOG_DIR)
+
+    def log(self, msg):
+        self.logger.log(logging.INFO, msg)
+    
+    def err(self, msg):
+        self.logger.log(logging.ERROR, msg)
+    
+    def warn(self, msg):
+        self.logger.log(logging.WARN, msg)
