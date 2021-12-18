@@ -2,9 +2,9 @@ import os
 from tensorflow import keras
 from tensorflow.keras import models
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from logger import logger as logging
+from logger import logger as logz
 
-logger = logging()
+logger = logz()
 
 def main():
     logger.log('Utilizing the VGG16 keras model')
