@@ -1,6 +1,6 @@
 # Classifier
 
-A simple neural network that can very accurately determine the subject of apples, bananas, oranges, and their rotten counterparts.
+A simple neural network that can very accurately determine the subject of a photo to be apples, bananas, oranges, and their rotten counterparts.
 
 ## Setup
 ---
