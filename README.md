@@ -18,7 +18,7 @@ The resulting file structure should be `dataset` -> `fruit` -> `test` -> `train`
 ## Running
 ---
 ### Trainer
-At this point you should be inside the virtual environment. You can now run the trainer via `python trainer.py`
+At this point you should be inside the virtual environment. If you have a better GPU than me, you might be able to play around with the batch sizes for more performance; I was limited on memory (GTX 1060, 6GB). You can now run the trainer via `python trainer.py`
 
 Depending on your system this could take a long time. Once it finishes, you'll see two new directories:
 - `fruit_model`
