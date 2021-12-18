@@ -21,27 +21,18 @@ def main():
     #     include_top=False
     # )
 
+    # Freeze base model
     base_model.trainable = False
-
-    # Create inputs with correct shape
     inputs = keras.Input(shape=(224, 224, 3))
-
     x = base_model(inputs, training=False)
-
-    # Add pooling layer or flatten layer
     x = keras.layers.Flatten()(x)
-
-    # Add final dense layer
     outputs = keras.layers.Dense(6, activation='softmax')(x)
-
-    # Combine inputs and outputs to create model
     model = keras.Model(inputs, outputs)
-
     model.summary()
-
     model.compile(loss=keras.losses.CategoricalCrossentropy(
         from_logits=False), metrics=[keras.metrics.Accuracy()])
 
+    # Data augmentation for better results
     datagen = ImageDataGenerator(
         samplewise_center=True,
         rotation_range=90,
@@ -62,18 +53,19 @@ def main():
     #     vertical_flip=True
     # )
 
-    # load and iterate training dataset
     train_it = datagen.flow_from_directory('dataset/fruit/train/',
                                         target_size=(224, 224),
                                         color_mode='rgb',
                                         class_mode="categorical",
                                         batch_size=4)
-    # load and iterate validation dataset
+
     valid_it = datagen.flow_from_directory('dataset/fruit/test',
                                         target_size=(224, 224),
                                         color_mode='rgb',
                                         class_mode="categorical",
                                         batch_size=4)
+
+    # Assess old model if exists
     old_accuracy = 0
     if os.path.isfile('_model'):
         old_model = models.load_model('_model')
@@ -81,13 +73,13 @@ def main():
         old_accuracy = eval[1]
 
     logger.log('Fitting model.....')
-
     model.fit(train_it,
             validation_data=valid_it,
             steps_per_epoch=train_it.samples/train_it.batch_size,
             validation_steps=valid_it.samples/valid_it.batch_size,
             epochs=20)
 
+    # Compare results
     evaluation = model.evaluate(valid_it, steps=valid_it.samples/valid_it.batch_size)
     logger.log('Original Model performance:')
     logger.log(f'LOSS: {evaluation[0]}; ACCURACY: {evaluation[1]}')
@@ -113,6 +105,7 @@ def main():
             validation_steps=valid_it.samples/valid_it.batch_size,
             epochs=5)
 
+    # Compare results
     evaluation = model.evaluate(valid_it, steps=valid_it.samples/valid_it.batch_size)
     logger.log('Tweaked Model performance:')
     logger.log(f'LOSS: {evaluation[0]}; ACCURACY: {evaluation[1]}')
