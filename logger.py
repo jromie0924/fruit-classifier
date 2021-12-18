@@ -56,7 +56,6 @@ class logger:
                     with open(old_filename, 'w') as old:
                         for line in latest:
                             old.write(f'{line}')
-                    # latest.truncate()
                 os.remove(self.LATEST)
             os.chdir('..')
         else:
