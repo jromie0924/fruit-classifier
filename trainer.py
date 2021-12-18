@@ -1,6 +1,4 @@
-import os
 from tensorflow import keras
-from tensorflow.keras import models
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from logger import logger as logz
 
@@ -53,67 +51,52 @@ def main():
     #     vertical_flip=True
     # )
 
-    train_it = datagen.flow_from_directory('dataset/fruit/train/',
-                                        target_size=(224, 224),
-                                        color_mode='rgb',
-                                        class_mode="categorical",
-                                        batch_size=4)
+    train_it = datagen.flow_from_directory('dataset/fruit/train/', target_size=(
+        224, 224), color_mode='rgb', class_mode="categorical", batch_size=4)
 
-    valid_it = datagen.flow_from_directory('dataset/fruit/test',
-                                        target_size=(224, 224),
-                                        color_mode='rgb',
-                                        class_mode="categorical",
-                                        batch_size=4)
+    valid_it = datagen.flow_from_directory('dataset/fruit/test', target_size=(
+        224, 224), color_mode='rgb', class_mode="categorical", batch_size=4)
 
-    # Assess old model if exists
-    old_accuracy = 0
-    if os.path.isfile('_model'):
-        old_model = models.load_model('_model')
-        eval = old_model.evaluate(valid_it, steps=valid_it.samples/valid_it.batch_size)
-        old_accuracy = eval[1]
-
-    logger.log('Fitting model.....')
+    logger.log('Fitting model...')
     model.fit(train_it,
-            validation_data=valid_it,
-            steps_per_epoch=train_it.samples/train_it.batch_size,
-            validation_steps=valid_it.samples/valid_it.batch_size,
-            epochs=20)
+              validation_data=valid_it,
+              steps_per_epoch=train_it.samples/train_it.batch_size,
+              validation_steps=valid_it.samples/valid_it.batch_size,
+              epochs=20)
 
     # Compare results
-    evaluation = model.evaluate(valid_it, steps=valid_it.samples/valid_it.batch_size)
-    logger.log('Original Model performance:')
+    logger.log('Initial evaluation...')
+    evaluation = model.evaluate(
+        valid_it, steps=valid_it.samples/valid_it.batch_size)
     logger.log(f'LOSS: {evaluation[0]}; ACCURACY: {evaluation[1]}')
-    if (old_accuracy > evaluation[1]):
-        logger.log(f'ORIGINAL MODEL PERFORMS WORSE THAN THE PREVIOUS MODEL: New: {evaluation[1]} vs Old: {old_accuracy}')
-    else:
-        logger.log(f'ORIGINAL MODEL OUTPERFORMS THE PREVIOUS MODEL: New: {evaluation[1]} vs Old: {old_accuracy}')
-    logger.log('\n\nmodel saved as \'fruit_model\'')
+    logger.log('model saved as \'fruit_model\'')
+
+    # TODO: Look into keras.model.save_model: https://keras.io/api/models/model_saving_apis/#savemodel-function
+
     model.save('fruit_model')
 
-    logger.log('Tweaking model.....')
+    logger.log('Tweaking model...')
 
     # Unfreeze the base model
     base_model.trainable = True
 
     # Compile the model with a low learning rate
     model.compile(optimizer=keras.optimizers.RMSprop(learning_rate=0.000001),
-                loss=keras.losses.CategoricalCrossentropy(from_logits=False), metrics=[keras.metrics.Accuracy()])
+                  loss=keras.losses.CategoricalCrossentropy(from_logits=False), metrics=[keras.metrics.Accuracy()])
 
     model.fit(train_it,
-            validation_data=valid_it,
-            steps_per_epoch=train_it.samples/train_it.batch_size,
-            validation_steps=valid_it.samples/valid_it.batch_size,
-            epochs=5)
+              validation_data=valid_it,
+              steps_per_epoch=train_it.samples/train_it.batch_size,
+              validation_steps=valid_it.samples/valid_it.batch_size,
+              epochs=5)
 
     # Compare results
-    evaluation = model.evaluate(valid_it, steps=valid_it.samples/valid_it.batch_size)
-    logger.log('Tweaked Model performance:')
+    evaluation = model.evaluate(
+        valid_it, steps=valid_it.samples/valid_it.batch_size)
     logger.log(f'LOSS: {evaluation[0]}; ACCURACY: {evaluation[1]}')
-    if (old_accuracy > evaluation[1]):
-        logger.log(f'TWEAKED MODEL PERFORMS WORSE THAN THE PREVIOUS MODEL: New: {evaluation[1]} vs Old: {old_accuracy}')
-    else:
-        logger.log(f'TWEAKED MODEL OUTPERFORMS THE PREVIOUS MODEL: New: {evaluation[1]} vs Old: {old_accuracy}')
+    logger.log('model saved as \'fruit_model_tweaked_base\'')
     model.save('fruit_model_tweaked_base')
+
 
 if __name__ == '__main__':
     try:
