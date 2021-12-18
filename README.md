@@ -3,7 +3,6 @@
 A simple neural network that can very accurately determine the subject of an image to belong to apples, bananas, oranges, and their rotten counterparts.
 
 ## Setup
----
 ### Get the data
 You need to ensure there is a dataset. Go to this url: https://www.kaggle.com/sriramr/fruits-fresh-and-rotten-for-classification and download the data. Extract it into the root of this repo. Rename the `dataset` SUBDIR to `fruit`.
 
@@ -16,7 +15,6 @@ The resulting file structure should be `dataset` -> `fruit` -> `test` -> `train`
 
 
 ## Running
----
 ### Trainer
 At this point you should be inside the virtual environment. If you have a better GPU than me, you might be able to play around with the batch sizes for more performance; I was limited on memory (GTX 1060, 6GB). You can now run the trainer via `python trainer.py`
 
